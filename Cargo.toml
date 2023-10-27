@@ -1,0 +1,12 @@
+[package]
+name = "eq_files"
+version = "0.1.0"
+authors = ["Anarelion <anarelion@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+bytes = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+compress = "0.2"
+
