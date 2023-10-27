@@ -6,6 +6,7 @@ use std::string::FromUtf8Error;
 
 pub use crate::pfs::PackFile;
 pub use crate::wld::WldFile;
+pub use crate::wld::fragments::WldMesh;
 use bytes::Bytes;
 use thiserror::Error;
 
@@ -21,7 +22,7 @@ pub enum EQFilesError {
     ErrorDecodingString(#[from] FromUtf8Error),
 }
 
-pub(crate) trait Decoder {
+pub trait Decoder {
     type Settings;
 
     fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, EQFilesError>
