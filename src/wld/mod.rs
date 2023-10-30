@@ -24,6 +24,7 @@ pub struct WldFile {
     pub t3: HashMap<u32, WldTextureFilename>,
     pub t4: HashMap<u32, WldTextureList>,
     pub t5: HashMap<u32, WldTextureRef>,
+    pub t17: HashMap<u32, WldSkeletonRef>,
     pub t18: HashMap<u32, WldTrackDef>,
     pub t19: HashMap<u32, WldTrack>,
     pub t20: HashMap<u32, WldModel>,
@@ -58,6 +59,7 @@ impl Decoder for WldFile {
         let t3 = extract_fragments(&raw_fragments, 3, names.clone());
         let t4 = extract_fragments(&raw_fragments, 4, names.clone());
         let t5 = extract_fragments(&raw_fragments, 5, names.clone());
+        let t17 = extract_fragments(&raw_fragments, 17, names.clone());
         let t18 = extract_fragments(&raw_fragments, 18, names.clone());
         let t19 = extract_fragments(&raw_fragments, 19, names.clone());
         let t20 = extract_fragments(&raw_fragments, 20, names.clone());
@@ -68,7 +70,7 @@ impl Decoder for WldFile {
         let remaining: HashSet<u32> = raw_fragments
             .iter()
             .map(|(_, frag)| frag.0)
-            .filter(|a| ![3, 4, 5, 18, 19, 20, 45, 48, 49, 54].contains(a))
+            .filter(|a| ![3, 4, 5, 17, 18, 19, 20, 45, 48, 49, 54].contains(a))
             .collect();
         if !remaining.is_empty() {
             info!("{:?}", remaining);
@@ -80,6 +82,7 @@ impl Decoder for WldFile {
             t3,
             t4,
             t5,
+            t17,
             t18,
             t19,
             t20,
@@ -129,5 +132,13 @@ impl WldFile {
 
     pub fn get_texture_list_ref(&self, index: u32) -> WldTextureRef {
         self.t5.get(&index).unwrap().clone()
+    }
+
+    pub fn get_skeleton_ref(&self, index: u32) -> WldSkeletonRef {
+        self.t17.get(&index).unwrap().clone()
+    }
+
+    pub fn get_fragment_type(&self, index:u32) -> u32 {
+        self.raw_fragments.get(&index).unwrap().0
     }
 }
