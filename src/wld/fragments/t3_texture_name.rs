@@ -2,17 +2,17 @@ use std::rc::Rc;
 
 use bytes::{Buf, Bytes};
 
-use crate::wld::names::WldNames;
 use crate::utils::decode_string;
+use crate::wld::names::WldNames;
 use crate::Decoder;
 
 #[derive(Clone, Debug)]
-pub struct WldTextureBitmapFilename {
+pub struct WldTextureFilename {
     pub name: Option<String>,
     pub textures: Vec<String>,
 }
 
-impl Decoder for WldTextureBitmapFilename {
+impl Decoder for WldTextureFilename {
     type Settings = Rc<WldNames>;
 
     fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>

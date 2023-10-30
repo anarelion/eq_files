@@ -2,7 +2,7 @@ use bytes::{Buf, Bytes};
 
 use crate::{Decoder, EQFilesError};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct WldHeader {
     pub magic_number: u32,
     pub is_old_world: bool,

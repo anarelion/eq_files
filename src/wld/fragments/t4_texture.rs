@@ -4,9 +4,10 @@ use bytes::{Buf, Bytes};
 
 use crate::wld::names::WldNames;
 use crate::Decoder;
+use tracing::info;
 
 #[derive(Clone, Debug)]
-pub struct WldTextureBitmap {
+pub struct WldTextureList {
     pub name: Option<String>,
     pub flags: u32,
     pub sleep: u32,
@@ -14,7 +15,7 @@ pub struct WldTextureBitmap {
     pub texture_list: Vec<u32>,
 }
 
-impl Decoder for WldTextureBitmap {
+impl Decoder for WldTextureList {
     type Settings = Rc<WldNames>;
 
     fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
@@ -37,6 +38,10 @@ impl Decoder for WldTextureBitmap {
         let mut texture_list = Vec::new();
         for _ in 0..texture_count {
             texture_list.push(input.get_u32_le());
+        }
+
+        if texture_count != 1 {
+            info!("weird texture : {:?}", name);
         }
 
         Ok(Self {

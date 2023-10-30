@@ -5,39 +5,40 @@ use bytes::{Buf, Bytes};
 use crate::wld::names::WldNames;
 use crate::Decoder;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct WldMesh {
+    pub name: Option<String>,
+
     pub animation_ref: u32,
     pub centre: (f32, f32, f32),
     pub color_count: u16,
-    pub color: Vec<[u8; 4]>,
     pub flags: u32,
+    pub scale: f32,
+    pub material_group_count: u16,
     pub material_list_ref: u32,
     pub max_distance: f32,
     pub max: (f32, f32, f32),
-    pub mesh_animated_bone: Vec<[f32; 3]>,
     pub mesh_animated_bone_count: u16,
     pub min: (f32, f32, f32),
-    pub name: Option<String>,
     pub normal_count: u16,
-    pub normal: Vec<[f32; 3]>,
-    pub material_group_count: u16,
-    pub material_group: Vec<(u16, u16)>,
+    pub params2: (u32, u32, u32),
     pub triangle_count: u16,
-    pub triangle: Vec<[u16; 4]>,
     pub unk1_frag_ref: u32,
     pub unk2_frag_ref: u32,
-    pub unk3: u32,
-    pub unk4: u32,
-    pub unk5: u32,
     pub uv_count: u16,
-    pub uv: Vec<[f32; 2]>,
     pub vertex_count: u16,
     pub vertex_piece_count: u16,
-    pub vertex_piece: Vec<[u16; 2]>,
     pub vertex_texture_count: u16,
-    pub vertex_texture: Vec<[u16; 2]>,
+
+    pub color: Vec<[u8; 4]>,
+    pub material_group: Vec<(u16, u16)>,
+    pub mesh_animated_bone: Vec<[f32; 3]>,
+    pub normal: Vec<[f32; 3]>,
     pub position: Vec<[f32; 3]>,
+    pub triangle: Vec<[u16; 4]>,
+    pub uv: Vec<[f32; 2]>,
+    pub vertex_piece: Vec<[u16; 2]>,
+    pub vertex_texture: Vec<[u16; 2]>,
 }
 
 impl Decoder for WldMesh {
@@ -54,9 +55,7 @@ impl Decoder for WldMesh {
         let unk1_frag_ref = input.get_u32_le();
         let unk2_frag_ref = input.get_u32_le();
         let centre = (input.get_f32_le(), input.get_f32_le(), input.get_f32_le());
-        let unk3 = input.get_u32_le();
-        let unk4 = input.get_u32_le();
-        let unk5 = input.get_u32_le();
+        let params2 = (input.get_u32_le(), input.get_u32_le(), input.get_u32_le());
 
         let max_distance = input.get_f32_le();
         let min = (input.get_f32_le(), input.get_f32_le(), input.get_f32_le());
@@ -74,10 +73,11 @@ impl Decoder for WldMesh {
 
         let mut vertex = Vec::new();
         for _ in 0..vertex_count {
+            let (v1, v2, v3) = (input.get_i16_le(), input.get_i16_le(), input.get_i16_le());
             vertex.push([
-                centre.0 + (input.get_i16_le() as f32) * scale,
-                centre.1 + (input.get_i16_le() as f32) * scale,
-                centre.2 + (input.get_i16_le() as f32) * scale,
+                centre.0 + (v1 as f32) * scale,
+                centre.1 + (v2 as f32) * scale,
+                centre.2 + (v3 as f32) * scale,
             ]);
         }
 
@@ -163,6 +163,7 @@ impl Decoder for WldMesh {
             material_list_ref,
             max_distance,
             max,
+            scale,
             mesh_animated_bone,
             mesh_animated_bone_count,
             min,
@@ -175,9 +176,7 @@ impl Decoder for WldMesh {
             triangle_count,
             unk1_frag_ref,
             unk2_frag_ref,
-            unk3,
-            unk4,
-            unk5,
+            params2,
             uv,
             uv_count,
             position: vertex,

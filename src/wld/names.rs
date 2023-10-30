@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use crate::utils::HASH_KEY;
 use crate::{Decoder, EQFilesError};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct WldNames(HashMap<u32, String>);
 
 impl Decoder for WldNames {

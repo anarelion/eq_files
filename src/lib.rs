@@ -5,8 +5,8 @@ mod wld;
 use std::string::FromUtf8Error;
 
 pub use crate::pfs::PackFile;
+pub use crate::wld::fragments::*;
 pub use crate::wld::WldFile;
-pub use crate::wld::fragments::WldMesh;
 use bytes::Bytes;
 use thiserror::Error;
 
