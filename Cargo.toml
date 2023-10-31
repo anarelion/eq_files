@@ -5,6 +5,7 @@ authors = ["Anarelion <anarelion@gmail.com>"]
 edition = "2021"
 
 [dependencies]
+bitbybit = "1.2"
 bytes = "1.0"
 thiserror = "1.0"
 tracing = "0.1"

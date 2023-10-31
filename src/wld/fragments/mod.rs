@@ -9,6 +9,7 @@ mod t54_mesh;
 mod t5_texture_list_wrapper;
 mod t45_dm_sprite_ref;
 mod t17_skeleton_ref;
+mod t16_skeleton;
 
 pub use t18_track_def::WldTrackDef;
 pub use t19_track::WldTrack;
@@ -21,3 +22,4 @@ pub use t54_mesh::WldMesh;
 pub use t5_texture_list_wrapper::WldTextureRef;
 pub use t45_dm_sprite_ref::WldDmSpriteRef;
 pub use t17_skeleton_ref::WldSkeletonRef;
+pub use t16_skeleton::WldSkeleton;
