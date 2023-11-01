@@ -137,6 +137,10 @@ impl WldFile {
         self.t5.get(&index).unwrap().clone()
     }
 
+    pub fn get_mesh(&self, index: u32) -> WldMesh {
+        self.t54.get(&index).unwrap().clone()
+    }
+
     pub fn get_skeleton_ref(&self, index: u32) -> WldSkeletonRef {
         self.t17.get(&index).unwrap().clone()
     }
@@ -145,7 +149,15 @@ impl WldFile {
         self.t16.get(&index).unwrap().clone()
     }
 
-    pub fn get_fragment_type(&self, index:u32) -> u32 {
+    pub fn get_track(&self, index: u32) -> WldTrack {
+        self.t19.get(&index).unwrap().clone()
+    }
+
+    pub fn get_dm_sprite_ref(&self, index: u32) -> WldDmSpriteRef {
+        self.t45.get(&index).unwrap().clone()
+    }
+
+    pub fn get_fragment_type(&self, index: u32) -> u32 {
         self.raw_fragments.get(&index).unwrap().0
     }
 }

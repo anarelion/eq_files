@@ -4,6 +4,7 @@ use bytes::{Buf, Bytes};
 
 use crate::wld::names::WldNames;
 use crate::Decoder;
+use tracing::info;
 
 #[derive(Clone, Debug)]
 pub struct WldMesh {
@@ -32,7 +33,7 @@ pub struct WldMesh {
 
     pub color: Vec<[u8; 4]>,
     pub material_group: Vec<(u16, u16)>,
-    pub mesh_animated_bone: Vec<[f32; 3]>,
+    pub mesh_animated_bone: Vec<[i16; 3]>,
     pub normal: Vec<[f32; 3]>,
     pub position: Vec<[f32; 3]>,
     pub triangle: Vec<[u16; 4]>,
@@ -148,11 +149,13 @@ impl Decoder for WldMesh {
         let mut mesh_animated_bone = Vec::new();
         for _ in 0..mesh_animated_bone_count {
             mesh_animated_bone.push([
-                centre.0 + (input.get_u16_le() as f32) * scale,
-                centre.1 + (input.get_u16_le() as f32) * scale,
-                centre.2 + (input.get_u16_le() as f32) * scale,
+                (input.get_i16_le()),
+                (input.get_i16_le()),
+                (input.get_i16_le()),
             ]);
         }
+
+        // info!("Remainder : {:?}", input.to_vec());
 
         Ok(Self {
             animation_ref,
