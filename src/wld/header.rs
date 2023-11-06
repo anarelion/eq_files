@@ -1,8 +1,10 @@
+use std::sync::Arc;
+
 use bytes::{Buf, Bytes};
 
-use crate::{Decoder, EQFilesError};
+use crate::{Decoder, EQFilesError, EmptySettings};
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct WldHeader {
     pub magic_number: u32,
     pub is_old_world: bool,
@@ -13,10 +15,8 @@ pub struct WldHeader {
     pub unk3: u32,
 }
 
-impl Decoder for WldHeader {
-    type Settings = ();
-
-    fn new(input: &mut Bytes, _: Self::Settings) -> Result<Self, EQFilesError>
+impl Decoder<EmptySettings> for WldHeader {
+    fn new(input: &mut Bytes, settings: Arc<EmptySettings>) -> Result<Self, EQFilesError>
     where
         Self: Sized,
     {

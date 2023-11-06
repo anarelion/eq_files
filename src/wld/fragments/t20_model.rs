@@ -1,15 +1,18 @@
-use std::rc::Rc;
+
+use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
+use tracing::info;
 
-use crate::wld::names::WldNames;
-use crate::Decoder;
+use crate::{Decoder, Settings};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, )]
 pub struct WldModel {
+    pub name_ref: i32,
     pub name: Option<String>,
     pub flags: u32,
-    pub callback_name_ref: Option<String>,
+    pub callback_name_ref: i32,
+    pub callback_name: Option<String>,
     pub action_count: u32,
     pub fragment_count: u32,
     pub bounds_ref: u32,
@@ -17,25 +20,26 @@ pub struct WldModel {
     pub offset_rotation: Option<((f32, f32, f32), (f32, f32, f32), u32)>,
     pub actions: Vec<WldModelAction>,
     pub fragments: Vec<u32>,
+    pub some_other_count: u32,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, )]
 pub struct WldModelAction {
     pub lod_count: u32,
     pub unk1: u32,
     pub lod: Vec<f32>,
 }
 
-impl Decoder for WldModel {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldModel {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name_ref =settings.get_name_ref();
+        let name = settings.get_name();
         let flags = input.get_u32_le();
-        let callback_name_ref = settings.get_name(input);
+        let callback_name_ref = input.get_i32_le();
+        let callback_name = settings.get_from_name_ref(callback_name_ref);
         let action_count = input.get_u32_le();
         let fragment_count = input.get_u32_le();
         let bounds_ref = input.get_u32_le();
@@ -75,10 +79,15 @@ impl Decoder for WldModel {
             fragments.push(input.get_u32_le());
         }
 
+        let some_other_count = input.get_u32_le();
+        info!("Remaining t20: {:?}", input);
+
         Ok(Self {
+            name_ref,
             name,
             flags,
             callback_name_ref,
+            callback_name,
             action_count,
             fragment_count,
             bounds_ref,
@@ -86,6 +95,7 @@ impl Decoder for WldModel {
             offset_rotation,
             actions,
             fragments,
+            some_other_count,
         })
     }
 }

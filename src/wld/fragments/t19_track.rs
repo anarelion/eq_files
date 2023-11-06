@@ -1,12 +1,11 @@
-use std::rc::Rc;
-use std::fmt::{Debug, Formatter};
 use bitbybit::bitfield;
-use bytes::{Bytes, Buf};
+use bytes::{Buf, Bytes};
+use std::fmt::{Debug, Formatter};
+use std::sync::Arc;
 
-use crate::wld::names::WldNames;
-use crate::Decoder;
+use crate::{Decoder, Settings};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, )]
 pub struct WldTrack {
     pub name: Option<String>,
     pub reference: u32,
@@ -14,8 +13,8 @@ pub struct WldTrack {
     pub sleep: Option<u32>,
 }
 
-
 #[bitfield(u32)]
+#[derive()]
 pub struct WldTrackFlags {
     #[bit(0, r)]
     pub has_sleep: bool, // 0x01
@@ -25,14 +24,12 @@ pub struct WldTrackFlags {
     pub interpolate: bool, // 0x04
 }
 
-impl Decoder for WldTrack {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldTrack {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name = settings.get_name();
         let reference = input.get_u32_le();
         let flags = WldTrackFlags::new_with_raw_value(input.get_u32_le());
         let sleep = if flags.has_sleep() {
@@ -49,7 +46,6 @@ impl Decoder for WldTrack {
         })
     }
 }
-
 
 impl Debug for WldTrackFlags {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

@@ -1,9 +1,8 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
-use bytes::{Bytes, Buf};
+use bytes::{Buf, Bytes};
 
-use crate::wld::names::WldNames;
-use crate::Decoder;
+use crate::{Decoder, Settings};
 
 #[derive(Clone, Debug)]
 pub struct WldDmSpriteRef {
@@ -12,14 +11,12 @@ pub struct WldDmSpriteRef {
     pub params: u32,
 }
 
-impl Decoder for WldDmSpriteRef {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldDmSpriteRef {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name = settings.get_name();
 
         Ok(Self {
             name,

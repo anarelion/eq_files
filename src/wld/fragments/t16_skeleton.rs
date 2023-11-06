@@ -1,12 +1,10 @@
 use bitbybit::bitfield;
 use bytes::{Buf, Bytes};
 use std::fmt::{Debug, Formatter};
-use std::rc::Rc;
-use tracing::info;
+use std::sync::Arc;
 
-use crate::utils::count;
-use crate::wld::names::WldNames;
 use crate::Decoder;
+use crate::{utils::count, Settings};
 
 #[derive(Clone, Debug)]
 pub struct WldSkeleton {
@@ -42,14 +40,12 @@ pub struct WldSkeletonDag {
     pub sub_dags: Vec<u32>,
 }
 
-impl Decoder for WldSkeleton {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldSkeleton {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name = settings.get_name().clone();
         let flags = WldSkeletonFlags::new_with_raw_value(input.get_u32_le());
         let num_dags = input.get_u32_le();
         let collision_volume_reference = input.get_u32_le();
@@ -99,14 +95,13 @@ impl Decoder for WldSkeleton {
     }
 }
 
-impl Decoder for WldSkeletonDag {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldSkeletonDag {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name_ref = input.get_i32_le();
+        let name = settings.get_from_name_ref(name_ref);
         let flags = input.get_u32_le();
 
         let track_ref = input.get_u32_le();

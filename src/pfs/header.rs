@@ -1,4 +1,8 @@
+use std::sync::Arc;
+
 use bytes::{Buf, Bytes};
+
+use crate::EmptySettings;
 
 #[derive(Clone)]
 pub struct PackFileHeader {
@@ -7,10 +11,8 @@ pub struct PackFileHeader {
     pub version: u32,
 }
 
-impl crate::Decoder for PackFileHeader {
-    type Settings = ();
-
-    fn new(input: &mut Bytes, _: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl crate::Decoder<EmptySettings> for PackFileHeader {
+    fn new(input: &mut Bytes, _: Arc<EmptySettings> ) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {

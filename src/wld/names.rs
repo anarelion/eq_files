@@ -1,23 +1,22 @@
 use bytes::{Buf, Bytes};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 use crate::utils::HASH_KEY;
 use crate::{Decoder, EQFilesError};
 
-#[derive(Debug, Default)]
-pub struct WldNames(HashMap<u32, String>);
+#[derive(Clone, Debug, Default)]
+pub struct WldNames(BTreeMap<u32, String>);
 
-impl Decoder for WldNames {
-    type Settings = u32;
-
-    fn new(input: &mut Bytes, size: Self::Settings) -> Result<Self, EQFilesError>
+impl Decoder<u32> for WldNames {
+    fn new(input: &mut Bytes, size: Arc<u32>) -> Result<Self, EQFilesError>
     where
         Self: Sized,
     {
         let mut last_offset = 0;
         let mut temp = Vec::new();
-        let mut res = HashMap::new();
-        for i in 0..size {
+        let mut res = BTreeMap::new();
+        for i in 0..*size {
             let c = input.get_u8() ^ HASH_KEY.get((i % 8) as usize).unwrap();
             if c == 0 {
                 let name =
@@ -34,12 +33,11 @@ impl Decoder for WldNames {
 }
 
 impl WldNames {
-    pub fn get_name(&self, input: &mut Bytes) -> Option<String> {
-        let ref_id = input.get_u32_le();
-        match ref_id {
+    pub fn get_name(&self, index: i32) -> Option<String> {
+        match index {
             0 => None,
             _ => {
-                let name_ref = (!ref_id) as u32;
+                let name_ref = (!index) as u32;
                 Some(
                     self.0
                         .get(&name_ref)

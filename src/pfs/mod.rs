@@ -3,10 +3,11 @@ mod entry;
 mod header;
 
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
-use crate::utils::*;
+use crate::{utils::*, EMPTY_SETTINGS, EmptySettings};
 use crate::{Decoder, EQFilesError};
 
 #[derive(Clone)]
@@ -18,17 +19,20 @@ pub struct PackFile {
     // footer: PackFileFooter,
 }
 
-impl Decoder for PackFile {
-    type Settings = PathBuf;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, EQFilesError>
+impl Decoder<PathBuf> for PackFile {
+    fn new(input: &mut Bytes, settings: Arc<PathBuf>) -> Result<Self, EQFilesError>
     where
         Self: Sized,
     {
-        let header = header::PackFileHeader::new(input, ())?;
+        let header = header::PackFileHeader::new(input, EMPTY_SETTINGS.clone())?;
         let block_contents = take(input, header.directory_offset as usize - 12);
         let entry_count = input.get_u32_le() as usize;
-        let mut entries = count(input, entry_count, (), entry::PackFileEntry::new)?;
+        let mut entries = count(
+            input,
+            entry_count,
+            EMPTY_SETTINGS.clone(),
+            entry::PackFileEntry::new,
+        )?;
         // let footer = footer(input)?;
 
         entries.sort_by_key(|a| a.pointer);
@@ -43,7 +47,8 @@ impl Decoder for PackFile {
                 while bytes_remaining > 0 {
                     let mut temp_block = block_contents.clone();
                     temp_block.advance(offset);
-                    let block = block::PackFileBlock::new(&mut temp_block, ()).unwrap();
+                    let block =
+                        block::PackFileBlock::new(&mut temp_block, EMPTY_SETTINGS.clone()).unwrap();
                     offset += (block.compressed_size + 8) as usize;
                     bytes_remaining -= block.uncompressed_size;
                     blocks.push(block);
@@ -53,7 +58,7 @@ impl Decoder for PackFile {
             })
             .collect();
         Ok(PackFile {
-            path: settings,
+            path: settings.clone().to_path_buf(),
             header,
             entry_count,
             entries,
@@ -65,7 +70,7 @@ impl Decoder for PackFile {
     }
 }
 
-fn directory_string(input: &mut Bytes, _: ()) -> Result<String, EQFilesError> {
+fn directory_string(input: &mut Bytes, _: Arc<EmptySettings>) -> Result<String, EQFilesError> {
     let length = input.get_u32_le();
     match string(input, length as usize) {
         Ok(s) => Ok(s),
@@ -75,7 +80,7 @@ fn directory_string(input: &mut Bytes, _: ()) -> Result<String, EQFilesError> {
 
 pub fn directory(input: &mut Bytes) -> Result<Vec<String>, EQFilesError> {
     let file_count = input.get_u32_le();
-    Ok(count(input, file_count as usize, (), directory_string)?)
+    Ok(count(input, file_count as usize, EMPTY_SETTINGS.clone(), directory_string)?)
 }
 
 impl PackFile {

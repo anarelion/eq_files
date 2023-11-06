@@ -1,4 +1,8 @@
+use std::sync::Arc;
+
 use bytes::{Buf, Bytes};
+
+use crate::{EmptySettings, Decoder};
 
 #[derive(Clone, PartialEq)]
 pub struct PackFileBlock {
@@ -7,10 +11,8 @@ pub struct PackFileBlock {
     pub data: Bytes,
 }
 
-impl crate::Decoder for PackFileBlock {
-    type Settings = ();
-
-    fn new(input: &mut Bytes, _: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<EmptySettings> for PackFileBlock {
+    fn new(input: &mut Bytes, _: Arc<EmptySettings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {

@@ -3,11 +3,13 @@ mod utils;
 mod wld;
 
 use std::string::FromUtf8Error;
+use std::sync::Arc;
 
 pub use crate::pfs::PackFile;
 pub use crate::wld::fragments::*;
 pub use crate::wld::WldFile;
 use bytes::Bytes;
+use lazy_static::lazy_static;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -22,10 +24,15 @@ pub enum EQFilesError {
     ErrorDecodingString(#[from] FromUtf8Error),
 }
 
-pub trait Decoder {
-    type Settings;
+#[derive(Default)]
+pub struct EmptySettings;
 
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, EQFilesError>
+lazy_static! {
+    pub static ref EMPTY_SETTINGS: Arc<EmptySettings> = Arc::new(EmptySettings);
+}
+
+pub trait Decoder<S> {
+    fn new(input: &mut Bytes, settings: Arc<S>) -> Result<Self, EQFilesError>
     where
         Self: Sized;
 }

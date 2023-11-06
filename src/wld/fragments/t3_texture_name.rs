@@ -1,10 +1,9 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
 use crate::utils::decode_string;
-use crate::wld::names::WldNames;
-use crate::Decoder;
+use crate::{Decoder, Settings};
 
 #[derive(Clone, Debug)]
 pub struct WldTextureFilename {
@@ -12,14 +11,12 @@ pub struct WldTextureFilename {
     pub textures: Vec<String>,
 }
 
-impl Decoder for WldTextureFilename {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldTextureFilename {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name = settings.get_name();
         let textures = (0..(input.get_i32_le() + 1))
             .map(|_| {
                 let name_length = input.get_u16_le();

@@ -1,6 +1,8 @@
 use std::io::Read;
+use std::sync::Arc;
 
 use crate::pfs::block::PackFileBlock;
+use crate::EmptySettings;
 use bytes::{Buf, Bytes};
 use compress::zlib;
 
@@ -12,10 +14,8 @@ pub struct PackFileEntry {
     pub blocks: Option<Vec<PackFileBlock>>,
 }
 
-impl crate::Decoder for PackFileEntry {
-    type Settings = ();
-
-    fn new(input: &mut Bytes, _: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl crate::Decoder<EmptySettings> for PackFileEntry {
+    fn new(input: &mut Bytes, _: Arc<EmptySettings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {

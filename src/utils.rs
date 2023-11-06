@@ -1,4 +1,5 @@
 use std::string::FromUtf8Error;
+use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
@@ -6,11 +7,11 @@ use crate::EQFilesError;
 
 pub(crate) const HASH_KEY: [u8; 8] = [0x95u8, 0x3A, 0xC5, 0x2A, 0x95, 0x7A, 0x95, 0x6A];
 
-pub fn count<T, E, S: Clone>(
+pub fn count<T, E, S>(
     input: &mut Bytes,
     count: usize,
-    settings: S,
-    f: fn(&mut Bytes, S) -> Result<T, E>,
+    settings: Arc<S>,
+    f: fn(&mut Bytes, Arc<S>) -> Result<T, E>,
 ) -> Result<Vec<T>, E> {
     let mut temp = Vec::new();
     for _ in 0..count {

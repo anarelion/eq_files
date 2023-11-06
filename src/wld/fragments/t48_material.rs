@@ -1,9 +1,7 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
+use crate::{Decoder, Settings};
 use bytes::{Buf, Bytes};
-
-use crate::wld::names::WldNames;
-use crate::Decoder;
 
 #[derive(Clone, Debug)]
 pub struct WldMaterial {
@@ -17,14 +15,12 @@ pub struct WldMaterial {
     pub pairs: Option<(u32, u32)>,
 }
 
-impl Decoder for WldMaterial {
-    type Settings = Rc<WldNames>;
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldMaterial {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.get_name(input);
+        let name = settings.get_name();
 
         let flags = input.get_u32_le();
         let render_method = input.get_u32_le();

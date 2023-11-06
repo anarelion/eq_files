@@ -1,10 +1,8 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
-use crate::wld::names::WldNames;
-use crate::Decoder;
-use tracing::info;
+use crate::{Decoder, Settings};
 
 #[derive(Clone, Debug)]
 pub struct WldMesh {
@@ -42,14 +40,12 @@ pub struct WldMesh {
     pub vertex_texture: Vec<[u16; 2]>,
 }
 
-impl Decoder for WldMesh {
-    type Settings = (bool, Rc<WldNames>);
-
-    fn new(input: &mut Bytes, settings: Self::Settings) -> Result<Self, crate::EQFilesError>
+impl Decoder<Settings> for WldMesh {
+    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
-        let name = settings.1.get_name(input);
+        let name = settings.get_name().clone();
         let flags = input.get_u32_le();
         let material_list_ref = input.get_u32_le();
         let animation_ref = input.get_u32_le();
@@ -84,7 +80,7 @@ impl Decoder for WldMesh {
 
         let mut uv = Vec::new();
         for _ in 0..uv_count {
-            if settings.0 {
+            if settings.is_old_world() {
                 uv.push([
                     (input.get_i16_le() as f32) / 256f32,
                     (input.get_i16_le() as f32) / 256f32,
