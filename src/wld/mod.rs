@@ -19,7 +19,7 @@ use raw_fragment::WldRawFragment;
 pub struct WldFile {
     pub header: Arc<WldHeader>,
     pub names: Arc<WldNames>,
-    pub raw_fragments: BTreeMap<u32, Arc<WldRawFragment>>,
+    pub fragments_by_index: BTreeMap<u32, Arc<WldRawFragment>>,
     base_settings: BaseSettings,
 }
 
@@ -31,7 +31,7 @@ impl Decoder<EmptySettings> for WldFile {
         let header = Arc::new(WldHeader::new(input, settings.clone())?);
         let names = Arc::new(WldNames::new(input, Arc::new(header.hash_size))?);
 
-        let raw_fragments: BTreeMap<u32, Arc<WldRawFragment>> = count(
+        let fragments_by_index: BTreeMap<u32, Arc<WldRawFragment>> = count(
             input,
             header.fragment_count as usize,
             names.clone(),
@@ -45,7 +45,7 @@ impl Decoder<EmptySettings> for WldFile {
         Ok(WldFile {
             header: header.clone(),
             names: names.clone(),
-            raw_fragments,
+            fragments_by_index,
             base_settings: BaseSettings::new(header, names),
         })
     }
@@ -56,15 +56,11 @@ impl WldFile {
     where
         T: WldFragment,
     {
-        let fragment = self.raw_fragments.get(&index)?.clone();
+        let fragment = self.fragments_by_index.get(&index)?.clone();
         assert_eq!(fragment.fragment_type, T::TYPE);
         let mut raw = fragment.contents.clone();
 
-        T::new(
-            &mut raw,
-            self.base_settings.make_settings(fragment),
-        )
-        .ok()
+        T::new(&mut raw, self.base_settings.make_settings(fragment)).ok()
     }
     // pub fn models(&self) -> Vec<WldModel> {
     //     self.t20.clone().into_values().collect()
