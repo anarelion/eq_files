@@ -16,7 +16,7 @@ pub struct WldHeader {
 }
 
 impl Decoder<EmptySettings> for WldHeader {
-    fn new(input: &mut Bytes, settings: Arc<EmptySettings>) -> Result<Self, EQFilesError>
+    fn new(input: &mut Bytes, _settings: Arc<EmptySettings>) -> Result<Self, EQFilesError>
     where
         Self: Sized,
     {
