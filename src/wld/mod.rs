@@ -20,6 +20,7 @@ pub struct WldFile {
     pub header: Arc<WldHeader>,
     pub names: Arc<WldNames>,
     pub fragments_by_index: BTreeMap<u32, Arc<WldRawFragment>>,
+    pub fragments_by_name: BTreeMap<String, Arc<WldRawFragment>>,
     base_settings: BaseSettings,
 }
 
@@ -42,10 +43,16 @@ impl Decoder<EmptySettings> for WldFile {
         .map(|(i, v)| ((i + 1) as u32, Arc::new(v.clone())))
         .collect();
 
+        let fragments_by_name = fragments_by_index
+            .iter()
+            .filter_map(|(_, v)| v.clone().name.clone().map(|n| (n, v.clone())))
+            .collect();
+
         Ok(WldFile {
             header: header.clone(),
             names: names.clone(),
             fragments_by_index,
+            fragments_by_name,
             base_settings: BaseSettings::new(header, names),
         })
     }
