@@ -69,9 +69,22 @@ impl WldFile {
 
         T::new(&mut raw, self.base_settings.make_settings(fragment)).ok()
     }
-    // pub fn models(&self) -> Vec<WldModel> {
-    //     self.t20.clone().into_values().collect()
-    // }
+    
+    pub fn models(&self) -> Vec<WldModel> {
+        self.fragments_by_index
+            .clone()
+            .into_iter()
+            .filter_map(|(t, f)| {
+                let f = f.clone();
+                if t == 20 {
+                    let mut input = f.contents.clone();
+                    WldModel::new(&mut input, self.base_settings.make_settings(f)).ok()
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 
     // pub fn materials(&self) -> Vec<WldMaterial> {
     //     self.t48.clone().into_values().collect()
