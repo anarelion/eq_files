@@ -7,7 +7,7 @@ use crate::{Decoder, Settings};
 #[derive(Clone, Debug)]
 pub struct WldTrackDef {
     pub name: Option<String>,
-    // pub remainder: Bytes,
+    pub remainder: Bytes,
 }
 
 impl Decoder<Settings> for WldTrackDef {
@@ -19,7 +19,7 @@ impl Decoder<Settings> for WldTrackDef {
 
         Ok(Self {
             name,
-            // remainder: input.clone(),
+            remainder: input.clone(),
         })
     }
 }
