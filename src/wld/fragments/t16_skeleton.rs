@@ -3,7 +3,7 @@ use bytes::{Buf, Bytes};
 use std::fmt::{Debug, Formatter};
 use std::sync::Arc;
 
-use crate::Decoder;
+use crate::{Decoder, WldFragment};
 use crate::{utils::count, Settings};
 
 #[derive(Clone, Debug)]
@@ -38,6 +38,10 @@ pub struct WldSkeletonDag {
     pub mesh_or_sprite_ref: u32,
     pub num_sub_dags: u32,
     pub sub_dags: Vec<u32>,
+}
+
+impl WldFragment for WldSkeleton {
+    const TYPE: u32 = 16;
 }
 
 impl Decoder<Settings> for WldSkeleton {

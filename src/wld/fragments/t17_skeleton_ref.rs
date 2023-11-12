@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
-use tracing::info;
 
-use crate::Decoder;
+use crate::{Decoder, WldFragment};
 use crate::Settings;
 
 #[derive(Clone, Debug)]
@@ -14,6 +13,10 @@ pub struct WldSkeletonRef {
     pub params1: u32,
 }
 
+impl WldFragment for WldSkeletonRef {
+    const TYPE: u32 = 17;
+}
+
 impl Decoder<Settings> for WldSkeletonRef {
     fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
@@ -21,8 +24,6 @@ impl Decoder<Settings> for WldSkeletonRef {
     {
         let reference = input.get_u32_le();
         let params1 = input.get_u32_le();
-
-        info!("Remaining t17: {:?}", input);
 
         Ok(Self {
             name_ref: settings.get_name_ref(),

@@ -69,14 +69,19 @@ impl WldFile {
 
         T::new(&mut raw, self.base_settings.make_settings(fragment)).ok()
     }
-    
+
+    pub fn type_by_index(&self, index: u32) -> u32 {
+        let fragment = self.fragments_by_index.get(&index).unwrap().clone();
+        fragment.fragment_type
+    }
+
     pub fn models(&self) -> Vec<WldModel> {
         self.fragments_by_index
             .clone()
             .into_iter()
-            .filter_map(|(t, f)| {
+            .filter_map(|(_, f)| {
                 let f = f.clone();
-                if t == 20 {
+                if f.fragment_type == WldModel::TYPE {
                     let mut input = f.contents.clone();
                     WldModel::new(&mut input, self.base_settings.make_settings(f)).ok()
                 } else {

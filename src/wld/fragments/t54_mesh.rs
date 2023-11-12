@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
 #[derive(Clone, Debug)]
 pub struct WldMesh {
@@ -38,6 +38,10 @@ pub struct WldMesh {
     pub uv: Vec<[f32; 2]>,
     pub vertex_piece: Vec<[u16; 2]>,
     pub vertex_texture: Vec<[u16; 2]>,
+}
+
+impl WldFragment for WldMesh {
+    const TYPE: u32 = 54;
 }
 
 impl Decoder<Settings> for WldMesh {
