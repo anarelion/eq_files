@@ -14,6 +14,7 @@ use fragments::*;
 use header::WldHeader;
 use names::WldNames;
 use raw_fragment::WldRawFragment;
+use tracing::info;
 
 #[derive(Debug)]
 pub struct WldFile {
@@ -43,6 +44,8 @@ impl Decoder<EmptySettings> for WldFile {
         .map(|(i, v)| ((i + 1) as u32, Arc::new(v.clone())))
         .collect();
 
+        info!("fragments by index: {}", fragments_by_index.len());
+
         let fragments_by_name = fragments_by_index
             .iter()
             .filter_map(|(_, v)| v.clone().name.clone().map(|n| (n, v.clone())))
@@ -68,6 +71,26 @@ impl WldFile {
         let mut raw = fragment.contents.clone();
 
         T::new(&mut raw, self.base_settings.make_settings(fragment)).ok()
+    }
+
+    pub fn fragment_by_name<T>(&self, contents: String) -> Vec<T>
+    where
+        T: WldFragment,
+    {
+        self.fragments_by_name
+            .iter()
+            .filter(|(name, fragment)| {
+                name.contains(&contents) && fragment.fragment_type == T::TYPE
+            })
+            .filter_map(|(_, fragment)| {
+                let mut cont = fragment.contents.clone();
+                T::new(
+                    &mut cont,
+                    self.base_settings.make_settings(fragment.clone()),
+                )
+                .ok()
+            })
+            .collect()
     }
 
     pub fn type_by_index(&self, index: u32) -> u32 {

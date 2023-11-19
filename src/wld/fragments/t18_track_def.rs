@@ -1,13 +1,19 @@
 use std::sync::Arc;
 
-use bytes::Bytes;
+use bytes::{Buf, Bytes};
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
 #[derive(Clone, Debug)]
 pub struct WldTrackDef {
+    pub name_ref: i32,
     pub name: Option<String>,
+    pub flags: u32,
     pub remainder: Bytes,
+}
+
+impl WldFragment for WldTrackDef {
+    const TYPE: u32 = 18;
 }
 
 impl Decoder<Settings> for WldTrackDef {
@@ -15,10 +21,14 @@ impl Decoder<Settings> for WldTrackDef {
     where
         Self: Sized,
     {
+        let name_ref = settings.get_name_ref();
         let name = settings.get_name();
+        let flags = input.get_u32_le();
 
         Ok(Self {
+            name_ref,
             name,
+            flags,
             remainder: input.clone(),
         })
     }

@@ -3,9 +3,9 @@ use bytes::{Buf, Bytes};
 use std::fmt::{Debug, Formatter};
 use std::sync::Arc;
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
-#[derive(Clone, Debug, )]
+#[derive(Clone, Debug)]
 pub struct WldTrack {
     pub name: Option<String>,
     pub reference: u32,
@@ -22,6 +22,10 @@ pub struct WldTrackFlags {
     pub reverse: bool, // 0x02
     #[bit(2, r)]
     pub interpolate: bool, // 0x04
+}
+
+impl WldFragment for WldTrack {
+    const TYPE: u32 = 19;
 }
 
 impl Decoder<Settings> for WldTrack {
