@@ -1,10 +1,12 @@
 use std::io::Read;
 use std::sync::Arc;
 
+use bytes::Buf;
+use bytes::Bytes;
+use compress::zlib;
+
 use crate::pfs::block::PackFileBlock;
 use crate::EmptySettings;
-use bytes::{Buf, Bytes};
-use compress::zlib;
 
 #[derive(Clone)]
 pub struct PackFileEntry {

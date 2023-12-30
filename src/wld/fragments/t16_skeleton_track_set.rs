@@ -1,10 +1,15 @@
-use bitbybit::bitfield;
-use bytes::{Buf, Bytes};
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
+use std::fmt::Formatter;
 use std::sync::Arc;
 
-use crate::{utils::count, Settings};
-use crate::{Decoder, WldFragment};
+use bitbybit::bitfield;
+use bytes::Buf;
+use bytes::Bytes;
+
+use crate::utils::count;
+use crate::Decoder;
+use crate::Settings;
+use crate::WldFragment;
 
 #[derive(Clone, Debug)]
 pub struct WldSkeletonTrackSet {
@@ -80,12 +85,12 @@ impl Decoder<Settings> for WldSkeletonTrackSet {
                 let dag = dags.get(index).unwrap();
                 dag.sub_dags.clone()
             };
-            
+
             for sub in &subs {
                 let sb = dags.get_mut(*sub as usize).unwrap();
                 sb.parent = Some(index as u32);
             }
-        };
+        }
 
         Ok(Self {
             name,

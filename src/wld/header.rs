@@ -1,9 +1,12 @@
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
-
-use crate::{Decoder, EQFilesError, EmptySettings};
+use bytes::Buf;
+use bytes::Bytes;
 use tracing::info;
+
+use crate::Decoder;
+use crate::EQFilesError;
+use crate::EmptySettings;
 
 #[derive(Clone, Debug, Default)]
 pub struct WldHeader {

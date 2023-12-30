@@ -5,10 +5,14 @@ mod header;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
-use crate::{utils::*, EMPTY_SETTINGS, EmptySettings};
-use crate::{Decoder, EQFilesError};
+use crate::utils::*;
+use crate::Decoder;
+use crate::EQFilesError;
+use crate::EmptySettings;
+use crate::EMPTY_SETTINGS;
 
 #[derive(Clone)]
 pub struct PackFile {
@@ -80,16 +84,20 @@ fn directory_string(input: &mut Bytes, _: Arc<EmptySettings>) -> Result<String, 
 
 pub fn directory(input: &mut Bytes) -> Result<Vec<String>, EQFilesError> {
     let file_count = input.get_u32_le();
-    Ok(count(input, file_count as usize, EMPTY_SETTINGS.clone(), directory_string)?)
+    count(
+        input,
+        file_count as usize,
+        EMPTY_SETTINGS.clone(),
+        directory_string,
+    )
 }
 
 impl PackFile {
     pub fn filenames(&self) -> Vec<String> {
         let directory_entry = self.entries.last().expect("Directory block does not exist");
         let mut uncompressed_blocks = directory_entry.decompress();
-        let filenames =
-            directory(&mut uncompressed_blocks).expect("Failed to parse directory block");
-        filenames
+
+        directory(&mut uncompressed_blocks).expect("Failed to parse directory block")
     }
 
     pub fn get(&self, filename: &str) -> Option<Bytes> {

@@ -1,9 +1,12 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
-use crate::{Decoder, Settings, WldFragment};
+use crate::Decoder;
+use crate::Settings;
+use crate::WldFragment;
 
 #[derive(Clone, Debug)]
 pub struct WldMesh {

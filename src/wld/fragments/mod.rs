@@ -26,9 +26,10 @@ pub use t4_texture_bitmap_info::WldTextureBitmapInfo;
 pub use t54_mesh::WldMesh;
 pub use t5_texture_bitmap_info_ref::WldTextureBitmapInfoRef;
 
+use super::header::WldHeader;
+use super::names::WldNames;
+use super::raw_fragment::WldRawFragment;
 use crate::Decoder;
-
-use super::{header::WldHeader, names::WldNames, raw_fragment::WldRawFragment};
 
 #[derive(Debug)]
 pub struct BaseSettings {

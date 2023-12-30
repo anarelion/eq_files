@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
 use crate::EmptySettings;
 
@@ -12,7 +13,7 @@ pub struct PackFileHeader {
 }
 
 impl crate::Decoder<EmptySettings> for PackFileHeader {
-    fn new(input: &mut Bytes, _: Arc<EmptySettings> ) -> Result<Self, crate::EQFilesError>
+    fn new(input: &mut Bytes, _: Arc<EmptySettings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {

@@ -1,8 +1,11 @@
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
-use crate::{Decoder, Settings, WldFragment};
+use crate::Decoder;
+use crate::Settings;
+use crate::WldFragment;
 
 #[derive(Clone, Debug)]
 pub struct WldSkeletonPieceTrackDef {
@@ -52,7 +55,13 @@ impl Decoder<Settings> for WldSkeletonPieceTrackDef {
                     ..Default::default()
                 }
             };
-            frame_transform.rotation = glam::quat(rotation_x as f32, rotation_y as f32, rotation_z as f32, rotation_denominator as f32).normalize();
+            frame_transform.rotation = glam::quat(
+                rotation_x as f32,
+                rotation_y as f32,
+                rotation_z as f32,
+                rotation_denominator as f32,
+            )
+            .normalize();
             frames.push(frame_transform);
         }
 

@@ -1,7 +1,8 @@
 use std::string::FromUtf8Error;
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
 use crate::EQFilesError;
 
@@ -24,7 +25,7 @@ pub fn count<T, E, S>(
 }
 
 pub fn string(input: &mut Bytes, length: usize) -> Result<String, FromUtf8Error> {
-    let data = take(input, length as usize);
+    let data = take(input, length);
     Ok(String::from_utf8(data.to_vec())?
         .trim_end_matches('\0')
         .to_string())

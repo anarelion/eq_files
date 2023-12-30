@@ -1,9 +1,14 @@
-use bitbybit::bitfield;
-use bytes::{Buf, Bytes};
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
+use std::fmt::Formatter;
 use std::sync::Arc;
 
-use crate::{Decoder, Settings, WldFragment};
+use bitbybit::bitfield;
+use bytes::Buf;
+use bytes::Bytes;
+
+use crate::Decoder;
+use crate::Settings;
+use crate::WldFragment;
 
 #[derive(Clone, Debug)]
 pub struct WldSkeletonPieceTrack {

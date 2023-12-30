@@ -1,8 +1,12 @@
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
+use glam::Vec3;
 
-use crate::{Decoder, Settings, WldFragment};
+use crate::Decoder;
+use crate::Settings;
+use crate::WldFragment;
 
 #[derive(Clone, Debug)]
 pub struct WldModel {
@@ -15,7 +19,7 @@ pub struct WldModel {
     pub fragment_count: u32,
     pub bounds_ref: u32,
     pub current_action: Option<u32>,
-    pub offset_rotation: Option<((f32, f32, f32), (f32, f32, f32), u32)>,
+    pub offset_rotation: Option<(Vec3, Vec3, u32)>,
     pub actions: Vec<WldModelAction>,
     pub fragments: Vec<u32>,
     pub some_other_count: u32,
@@ -53,8 +57,8 @@ impl Decoder<Settings> for WldModel {
 
         let offset_rotation = if flags & 2 == 2 {
             Some((
-                (input.get_f32_le(), input.get_f32_le(), input.get_f32_le()),
-                (input.get_f32_le(), input.get_f32_le(), input.get_f32_le()),
+                (input.get_f32_le(), input.get_f32_le(), input.get_f32_le()).into(),
+                (input.get_f32_le(), input.get_f32_le(), input.get_f32_le()).into(),
                 input.get_u32_le(),
             ))
         } else {

@@ -1,9 +1,12 @@
-use bytes::{Buf, Bytes};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+use bytes::Buf;
+use bytes::Bytes;
+
 use crate::utils::HASH_KEY;
-use crate::{Decoder, EQFilesError};
+use crate::Decoder;
+use crate::EQFilesError;
 
 #[derive(Clone, Debug, Default)]
 pub struct WldNames(BTreeMap<u32, String>);
@@ -19,8 +22,7 @@ impl Decoder<u32> for WldNames {
         for i in 0..*size {
             let c = input.get_u8() ^ HASH_KEY.get((i % 8) as usize).unwrap();
             if c == 0 {
-                let name =
-                    String::from_utf8(temp).map_err(|e| EQFilesError::ErrorDecodingString(e))?;
+                let name = String::from_utf8(temp).map_err(EQFilesError::ErrorDecodingString)?;
                 res.insert(last_offset, name);
                 last_offset = i;
                 temp = Vec::new();
@@ -41,8 +43,7 @@ impl WldNames {
                 Some(
                     self.0
                         .get(&name_ref)
-                        .or(Some(&format!("{}", name_ref)))
-                        .unwrap()
+                        .unwrap_or(&format!("{}", name_ref))
                         .clone(),
                 )
             }

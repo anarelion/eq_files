@@ -3,18 +3,20 @@ mod header;
 mod names;
 mod raw_fragment;
 
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use bytes::Bytes;
-use std::collections::BTreeMap;
-
-use crate::{utils::*, EmptySettings};
-use crate::{Decoder, EQFilesError};
 use fragments::*;
 use header::WldHeader;
 use names::WldNames;
 use raw_fragment::WldRawFragment;
 use tracing::info;
+
+use crate::utils::*;
+use crate::Decoder;
+use crate::EQFilesError;
+use crate::EmptySettings;
 
 type FragmentIndex = u32;
 
@@ -79,8 +81,7 @@ impl WldFile {
     where
         T: WldFragment,
     {
-        self
-            .fragments_by_name
+        self.fragments_by_name
             .iter()
             .filter(|(fragment_name, fragment)| {
                 **fragment_name == name && fragment.fragment_type == T::TYPE

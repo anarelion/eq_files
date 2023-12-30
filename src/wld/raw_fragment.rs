@@ -1,11 +1,12 @@
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
-
-use crate::utils::take;
-use crate::{Decoder, EQFilesError};
+use bytes::Buf;
+use bytes::Bytes;
 
 use super::names::WldNames;
+use crate::utils::take;
+use crate::Decoder;
+use crate::EQFilesError;
 
 #[derive(Clone, Debug)]
 pub struct WldRawFragment {

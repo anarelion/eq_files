@@ -1,12 +1,15 @@
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
+use std::fmt::Formatter;
 use std::sync::Arc;
 
 use bitbybit::bitfield;
-use bytes::{Buf, Bytes};
-
-use crate::Settings;
-use crate::{Decoder, WldFragment};
+use bytes::Buf;
+use bytes::Bytes;
 use tracing::info;
+
+use crate::Decoder;
+use crate::Settings;
+use crate::WldFragment;
 
 #[bitfield(u32)]
 pub struct WldTextureBitmapInfoFlags {

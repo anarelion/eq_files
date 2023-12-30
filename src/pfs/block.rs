@@ -1,8 +1,10 @@
 use std::sync::Arc;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
-use crate::{EmptySettings, Decoder};
+use crate::Decoder;
+use crate::EmptySettings;
 
 #[derive(Clone, PartialEq)]
 pub struct PackFileBlock {
