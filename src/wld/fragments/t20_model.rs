@@ -1,12 +1,10 @@
-
 use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
-use tracing::info;
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
-#[derive(Clone, Debug, )]
+#[derive(Clone, Debug)]
 pub struct WldModel {
     pub name_ref: i32,
     pub name: Option<String>,
@@ -23,11 +21,15 @@ pub struct WldModel {
     pub some_other_count: u32,
 }
 
-#[derive(Clone, Debug, )]
+#[derive(Clone, Debug)]
 pub struct WldModelAction {
     pub lod_count: u32,
     pub unk1: u32,
     pub lod: Vec<f32>,
+}
+
+impl WldFragment for WldModel {
+    const TYPE: u32 = 20;
 }
 
 impl Decoder<Settings> for WldModel {
@@ -35,7 +37,7 @@ impl Decoder<Settings> for WldModel {
     where
         Self: Sized,
     {
-        let name_ref =settings.get_name_ref();
+        let name_ref = settings.get_name_ref();
         let name = settings.get_name();
         let flags = input.get_u32_le();
         let callback_name_ref = input.get_i32_le();
@@ -80,7 +82,6 @@ impl Decoder<Settings> for WldModel {
         }
 
         let some_other_count = input.get_u32_le();
-        info!("Remaining t20: {:?}", input);
 
         Ok(Self {
             name_ref,

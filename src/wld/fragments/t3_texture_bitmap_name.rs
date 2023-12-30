@@ -3,15 +3,19 @@ use std::sync::Arc;
 use bytes::{Buf, Bytes};
 
 use crate::utils::decode_string;
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
 #[derive(Clone, Debug)]
-pub struct WldTextureFilename {
+pub struct WldTextureBitmapName {
     pub name: Option<String>,
     pub textures: Vec<String>,
 }
 
-impl Decoder<Settings> for WldTextureFilename {
+impl WldFragment for WldTextureBitmapName {
+    const TYPE: u32 = 3;
+}
+
+impl Decoder<Settings> for WldTextureBitmapName {
     fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,

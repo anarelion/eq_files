@@ -1,17 +1,18 @@
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
 #[derive(Clone, Debug)]
 pub struct WldMesh {
     pub name: Option<String>,
 
+    pub flags: u32,
     pub animation_ref: u32,
     pub centre: (f32, f32, f32),
     pub color_count: u16,
-    pub flags: u32,
     pub scale: f32,
     pub material_group_count: u16,
     pub material_list_ref: u32,
@@ -36,8 +37,12 @@ pub struct WldMesh {
     pub position: Vec<[f32; 3]>,
     pub triangle: Vec<[u16; 4]>,
     pub uv: Vec<[f32; 2]>,
-    pub vertex_piece: Vec<[u16; 2]>,
+    pub vertex_piece: BTreeMap<u16, (u16, u16)>,
     pub vertex_texture: Vec<[u16; 2]>,
+}
+
+impl WldFragment for WldMesh {
+    const TYPE: u32 = 54;
 }
 
 impl Decoder<Settings> for WldMesh {
@@ -61,26 +66,27 @@ impl Decoder<Settings> for WldMesh {
         let uv_count = input.get_u16_le();
         let normal_count = input.get_u16_le();
         let color_count = input.get_u16_le();
-        let triangle_count = input.get_u16_le();
-        let vertex_piece_count = input.get_u16_le();
-        let material_group_count = input.get_u16_le();
-        let vertex_texture_count = input.get_u16_le();
-        let mesh_animated_bone_count = input.get_u16_le();
+        let triangle_count = input.get_u16_le(); // face count
+        let vertex_piece_count = input.get_u16_le(); // skin assignment group
+        let material_group_count = input.get_u16_le(); // face material group
+        let vertex_texture_count = input.get_u16_le(); // vertex material
+        let mesh_animated_bone_count = input.get_u16_le(); // meshop count
         let scale = 1f32 / (1u32 << input.get_u16_le()) as f32;
 
         let mut vertex = Vec::new();
         for _ in 0..vertex_count {
             let (v1, v2, v3) = (input.get_i16_le(), input.get_i16_le(), input.get_i16_le());
             vertex.push([
-                centre.0 + (v1 as f32) * scale,
-                centre.1 + (v2 as f32) * scale,
-                centre.2 + (v3 as f32) * scale,
+                (v1 as f32) * scale,
+                (v2 as f32) * scale,
+                (v3 as f32) * scale,
             ]);
         }
 
         let mut uv = Vec::new();
         for _ in 0..uv_count {
             if settings.is_old_world() {
+                // TODO: this value assumes all textures are 256x256 as it is in pixels
                 uv.push([
                     (input.get_i16_le() as f32) / 256f32,
                     (input.get_i16_le() as f32) / 256f32,
@@ -96,9 +102,9 @@ impl Decoder<Settings> for WldMesh {
         let mut normal = Vec::new();
         for _ in 0..normal_count {
             normal.push([
-                (input.get_i8() as f32) / 256f32,
-                (input.get_i8() as f32) / 256f32,
-                (input.get_i8() as f32) / 256f32,
+                (input.get_i8() as f32) / 127f32,
+                (input.get_i8() as f32) / 127f32,
+                (input.get_i8() as f32) / 127f32,
             ]);
         }
 
@@ -123,10 +129,15 @@ impl Decoder<Settings> for WldMesh {
             ]);
         }
 
-        // skin_assignment_groups_count
-        let mut vertex_piece = Vec::new();
+        // skin_assignment_groups_count -- vertices assigned to each bone
+        let mut vertex_piece = BTreeMap::new();
+        let mut mobstart = 0;
         for _ in 0..vertex_piece_count {
-            vertex_piece.push([input.get_u16_le(), input.get_u16_le()]);
+            let count = input.get_u16_le();
+            let bone_index = input.get_u16_le();
+            let item = (bone_index, count);
+            vertex_piece.insert(mobstart, item);
+            mobstart += count;
         }
 
         // face_material_groups_count

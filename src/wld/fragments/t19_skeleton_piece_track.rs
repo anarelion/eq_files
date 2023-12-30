@@ -14,7 +14,6 @@ pub struct WldSkeletonPieceTrack {
 }
 
 #[bitfield(u32)]
-#[derive()]
 pub struct WldSkeletonPieceTrackFlags {
     #[bit(0, r)]
     pub has_sleep: bool, // 0x01

@@ -3,16 +3,17 @@ use std::sync::Arc;
 use bytes::{Buf, Bytes};
 
 use crate::{Decoder, EQFilesError, EmptySettings};
+use tracing::info;
 
 #[derive(Clone, Debug, Default)]
 pub struct WldHeader {
     pub magic_number: u32,
     pub is_old_world: bool,
     pub fragment_count: u32,
-    pub unk1: u32,
-    pub unk2: u32,
-    pub hash_size: u32,
-    pub unk3: u32,
+    pub region_count: u32,
+    pub max_object_bytes: u32,
+    pub string_hash_size: u32,
+    pub string_count: u32,
 }
 
 impl Decoder<EmptySettings> for WldHeader {
@@ -34,19 +35,23 @@ impl Decoder<EmptySettings> for WldHeader {
         };
 
         let fragment_count = input.get_u32_le();
-        let unk1 = input.get_u32_le();
-        let unk2 = input.get_u32_le();
-        let hash_size = input.get_u32_le();
-        let unk3 = input.get_u32_le();
+        let region_count = input.get_u32_le();
+        let max_object_bytes = input.get_u32_le();
+        let string_hash_size = input.get_u32_le();
+        let string_count = input.get_u32_le();
 
-        Ok(WldHeader {
+        let result = WldHeader {
             magic_number,
             is_old_world,
             fragment_count,
-            unk1,
-            unk2,
-            hash_size,
-            unk3,
-        })
+            region_count,
+            max_object_bytes,
+            string_hash_size,
+            string_count,
+        };
+
+        info!("{:?}", result);
+
+        Ok(result)
     }
 }

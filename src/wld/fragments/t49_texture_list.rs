@@ -2,13 +2,17 @@ use std::sync::Arc;
 
 use bytes::{Buf, Bytes};
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 
 #[derive(Clone, Debug)]
 pub struct WldMaterialList {
     pub name: Option<String>,
     pub flags: u32,
     pub material_refs: Vec<u32>,
+}
+
+impl WldFragment for WldMaterialList {
+    const TYPE: u32 = 49;
 }
 
 impl Decoder<Settings> for WldMaterialList {

@@ -14,12 +14,15 @@ use fragments::*;
 use header::WldHeader;
 use names::WldNames;
 use raw_fragment::WldRawFragment;
+use tracing::info;
+
+type FragmentIndex = u32;
 
 #[derive(Debug)]
 pub struct WldFile {
     pub header: Arc<WldHeader>,
     pub names: Arc<WldNames>,
-    pub fragments_by_index: BTreeMap<u32, Arc<WldRawFragment>>,
+    pub fragments_by_index: BTreeMap<FragmentIndex, Arc<WldRawFragment>>,
     pub fragments_by_name: BTreeMap<String, Arc<WldRawFragment>>,
     base_settings: BaseSettings,
 }
@@ -30,7 +33,7 @@ impl Decoder<EmptySettings> for WldFile {
         Self: Sized,
     {
         let header = Arc::new(WldHeader::new(input, settings.clone())?);
-        let names = Arc::new(WldNames::new(input, Arc::new(header.hash_size))?);
+        let names = Arc::new(WldNames::new(input, Arc::new(header.string_hash_size))?);
 
         let fragments_by_index: BTreeMap<u32, Arc<WldRawFragment>> = count(
             input,
@@ -42,6 +45,8 @@ impl Decoder<EmptySettings> for WldFile {
         .enumerate()
         .map(|(i, v)| ((i + 1) as u32, Arc::new(v.clone())))
         .collect();
+
+        info!("fragments by index: {}", fragments_by_index.len());
 
         let fragments_by_name = fragments_by_index
             .iter()
@@ -59,7 +64,7 @@ impl Decoder<EmptySettings> for WldFile {
 }
 
 impl WldFile {
-    pub fn fragment_by_index<T>(&self, index: u32) -> Option<T>
+    pub fn fragment_by_index<T>(&self, index: FragmentIndex) -> Option<T>
     where
         T: WldFragment,
     {
@@ -69,64 +74,80 @@ impl WldFile {
 
         T::new(&mut raw, self.base_settings.make_settings(fragment)).ok()
     }
-    
-    pub fn models(&self) -> Vec<WldModel> {
-        self.fragments_by_index
-            .clone()
+
+    pub fn fragment_by_name<T>(&self, name: String) -> Option<T>
+    where
+        T: WldFragment,
+    {
+        self
+            .fragments_by_name
+            .iter()
+            .filter(|(fragment_name, fragment)| {
+                **fragment_name == name && fragment.fragment_type == T::TYPE
+            })
+            .filter_map(|(_, fragment)| {
+                let mut cont = fragment.contents.clone();
+                T::new(
+                    &mut cont,
+                    self.base_settings.make_settings(fragment.clone()),
+                )
+                .ok()
+            })
+            .collect::<Vec<T>>()
             .into_iter()
-            .filter_map(|(t, f)| {
-                let f = f.clone();
-                if t == 20 {
-                    let mut input = f.contents.clone();
-                    WldModel::new(&mut input, self.base_settings.make_settings(f)).ok()
-                } else {
-                    None
-                }
+            .next()
+    }
+
+    pub fn fragments_containing_name<T>(&self, contents: String) -> Vec<T>
+    where
+        T: WldFragment,
+    {
+        self.fragments_by_name
+            .iter()
+            .filter(|(name, fragment)| {
+                name.contains(&contents) && fragment.fragment_type == T::TYPE
+            })
+            .filter_map(|(_, fragment)| {
+                let mut cont = fragment.contents.clone();
+                T::new(
+                    &mut cont,
+                    self.base_settings.make_settings(fragment.clone()),
+                )
+                .ok()
             })
             .collect()
     }
 
-    // pub fn materials(&self) -> Vec<WldMaterial> {
-    //     self.t48.clone().into_values().collect()
-    // }
+    pub fn fragments_by_type<T>(&self, typ: u32) -> Vec<T>
+    where
+        T: WldFragment,
+    {
+        self.fragments_by_name
+            .iter()
+            .filter(|(_, fragment)| {
+                fragment.fragment_type == typ && fragment.fragment_type == T::TYPE
+            })
+            .filter_map(|(_, fragment)| {
+                let mut cont = fragment.contents.clone();
+                T::new(
+                    &mut cont,
+                    self.base_settings.make_settings(fragment.clone()),
+                )
+                .ok()
+            })
+            .collect()
+    }
 
-    // pub fn meshes(&self) -> Vec<WldMesh> {
-    //     self.t54.clone().into_values().collect()
-    // }
+    pub fn type_by_index(&self, index: u32) -> u32 {
+        let fragment = self.fragments_by_index.get(&index).unwrap().clone();
+        fragment.fragment_type
+    }
 
-    // pub fn get_texture_filename(&self, index: u32) -> WldTextureFilename {
-    //     self.t3.get(&index).unwrap().clone()
-    // }
+    pub fn materials(&self) -> Vec<WldTexture> {
+        self.fragments_by_type(WldTexture::TYPE)
+    }
 
-    // pub fn get_texture_list(&self, index: u32) -> WldTextureList {
-    //     self.t4.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_texture_list_ref(&self, index: u32) -> WldTextureRef {
-    //     self.t5.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_skeleton(&self, index: u32) -> WldSkeleton {
-    //     self.t16.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_skeleton_ref(&self, index: u32) -> WldSkeletonRef {
-    //     self.t17.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_track(&self, index: u32) -> WldTrack {
-    //     self.t19.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_dm_sprite_ref(&self, index: u32) -> WldDmSpriteRef {
-    //     self.t45.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_mesh(&self, index: u32) -> WldMesh {
-    //     self.t54.get(&index).unwrap().clone()
-    // }
-
-    // pub fn get_fragment_type(&self, index: u32) -> u32 {
-    //     self.raw_fragments.get(&index).unwrap().0
-    // }
+    pub fn models(&self) -> Vec<WldModel> {
+        self.fragments_by_type(WldModel::TYPE)
+    }
 }

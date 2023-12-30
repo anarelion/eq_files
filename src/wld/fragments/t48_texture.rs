@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use crate::{Decoder, Settings};
+use crate::{Decoder, Settings, WldFragment};
 use bytes::{Buf, Bytes};
 
 #[derive(Clone, Debug)]
-pub struct WldMaterial {
+pub struct WldTexture {
     pub name: Option<String>,
     pub flags: u32,
     pub render_method: u32,
@@ -15,7 +15,11 @@ pub struct WldMaterial {
     pub pairs: Option<(u32, u32)>,
 }
 
-impl Decoder<Settings> for WldMaterial {
+impl WldFragment for WldTexture {
+    const TYPE: u32 = 48;
+}
+
+impl Decoder<Settings> for WldTexture {
     fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,

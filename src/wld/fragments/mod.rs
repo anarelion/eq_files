@@ -1,30 +1,30 @@
-mod t16_skeleton;
-mod t17_skeleton_ref;
-mod t18_track_def;
-mod t19_track;
+mod t16_skeleton_track_set;
+mod t17_skeleton_track_set_ref;
+mod t18_skeleton_piece_track_def;
+mod t19_skeleton_piece_track;
 mod t20_model;
-mod t3_texture_name;
-mod t45_dm_sprite_ref;
-mod t48_material;
-mod t49_material_list;
-mod t4_texture;
+mod t3_texture_bitmap_name;
+mod t45_mesh_ref;
+mod t48_texture;
+mod t49_texture_list;
+mod t4_texture_bitmap_info;
 mod t54_mesh;
-mod t5_texture_list_wrapper;
+mod t5_texture_bitmap_info_ref;
 
 use std::sync::Arc;
 
-pub use t16_skeleton::WldSkeleton;
-pub use t17_skeleton_ref::WldSkeletonRef;
-pub use t18_track_def::WldTrackDef;
-pub use t19_track::WldTrack;
+pub use t16_skeleton_track_set::WldSkeletonTrackSet;
+pub use t17_skeleton_track_set_ref::WldSkeletonTrackSetRef;
+pub use t18_skeleton_piece_track_def::WldSkeletonPieceTrackDef;
+pub use t19_skeleton_piece_track::WldSkeletonPieceTrack;
 pub use t20_model::WldModel;
-pub use t3_texture_name::WldTextureFilename;
-pub use t45_dm_sprite_ref::WldDmSpriteRef;
-pub use t48_material::WldMaterial;
-pub use t49_material_list::WldMaterialList;
-pub use t4_texture::WldTextureList;
+pub use t3_texture_bitmap_name::WldTextureBitmapName;
+pub use t45_mesh_ref::WldMeshRef;
+pub use t48_texture::WldTexture;
+pub use t49_texture_list::WldMaterialList;
+pub use t4_texture_bitmap_info::WldTextureBitmapInfo;
 pub use t54_mesh::WldMesh;
-pub use t5_texture_list_wrapper::WldTextureRef;
+pub use t5_texture_bitmap_info_ref::WldTextureBitmapInfoRef;
 
 use crate::Decoder;
 
