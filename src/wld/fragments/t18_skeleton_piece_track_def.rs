@@ -82,3 +82,17 @@ pub struct WldSkeletonPieceTrackFrameTransform {
     pub scale: f32,
     pub model_matrix: glam::Mat4,
 }
+
+impl WldSkeletonPieceTrackFrameTransform {
+    pub fn scale_matrix(&self) -> glam::Mat4 {
+        glam::Mat4::from_scale(glam::Vec3::from((self.scale, self.scale, self.scale)))
+    }
+
+    pub fn rotation_matrix(&self) -> glam::Mat4 {
+        glam::Mat4::from_quat(glam::Quat::from_array(self.rotation.to_array()))
+    }
+
+    pub fn translation_matrix(&self) -> glam::Mat4 {
+        glam::Mat4::from_translation(self.translation.to_array().into())
+    }
+}
