@@ -1,6 +1,7 @@
 mod pfs;
 mod utils;
 mod wld;
+mod model;
 
 use std::string::FromUtf8Error;
 use std::sync::Arc;
@@ -12,6 +13,7 @@ use thiserror::Error;
 pub use crate::pfs::PackFile;
 pub use crate::wld::fragments::*;
 pub use crate::wld::WldFile;
+pub use crate::model::Model;
 
 #[derive(Debug, Error)]
 pub enum EQFilesError {
