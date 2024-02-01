@@ -29,7 +29,7 @@ impl Debug for WldTextureBitmapInfoFlags {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WldTextureBitmapInfo {
     pub name: Option<String>,
     pub flags: WldTextureBitmapInfoFlags,

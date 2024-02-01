@@ -20,7 +20,7 @@ use crate::EmptySettings;
 
 type FragmentIndex = u32;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct WldFile {
     pub header: Arc<WldHeader>,
     pub names: Arc<WldNames>,

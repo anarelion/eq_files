@@ -31,7 +31,7 @@ use super::names::WldNames;
 use super::raw_fragment::WldRawFragment;
 use crate::Decoder;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BaseSettings {
     header: Arc<WldHeader>,
     names: Arc<WldNames>,
