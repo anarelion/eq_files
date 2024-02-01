@@ -8,7 +8,7 @@ use crate::Settings;
 use crate::WldFragment;
 
 #[derive(Clone, Debug)]
-pub struct WldTexture {
+pub struct WldMaterial {
     pub name: Option<String>,
     pub flags: u32,
     pub render_method: u32,
@@ -19,11 +19,11 @@ pub struct WldTexture {
     pub pairs: Option<(u32, u32)>,
 }
 
-impl WldFragment for WldTexture {
+impl WldFragment for WldMaterial {
     const TYPE: u32 = 48;
 }
 
-impl Decoder<Settings> for WldTexture {
+impl Decoder<Settings> for WldMaterial {
     fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,

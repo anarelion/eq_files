@@ -144,8 +144,8 @@ impl WldFile {
         fragment.fragment_type
     }
 
-    pub fn materials(&self) -> Vec<WldTexture> {
-        self.fragments_by_type(WldTexture::TYPE)
+    pub fn materials(&self) -> Vec<WldMaterial> {
+        self.fragments_by_type(WldMaterial::TYPE)
     }
 
     pub fn models(&self) -> Vec<WldModel> {
