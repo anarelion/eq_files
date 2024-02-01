@@ -10,6 +10,7 @@ mod t38_26_particle_sprite;
 mod t45_2d_mesh_ref;
 mod t48_30_material;
 mod t49_31_material_list;
+mod t52_34_particle_cloud;
 mod t54_36_mesh;
 
 use std::sync::Arc;
@@ -26,6 +27,7 @@ pub use t38_26_particle_sprite::WldParticleSprite;
 pub use t45_2d_mesh_ref::WldMeshRef;
 pub use t48_30_material::WldMaterial;
 pub use t49_31_material_list::WldMaterialList;
+pub use t52_34_particle_cloud::WldParticleCloud;
 pub use t54_36_mesh::WldMesh;
 
 use super::header::WldHeader;
