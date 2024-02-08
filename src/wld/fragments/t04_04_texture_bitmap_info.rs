@@ -67,10 +67,6 @@ impl Decoder<Settings> for WldTextureBitmapInfo {
             texture_list.push(input.get_u32_le());
         }
 
-        if frame_count != 1 {
-            info!("weird texture : {:?}", name);
-        }
-
         Ok(Self {
             name,
             flags,
