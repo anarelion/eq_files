@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use bytes::Buf;
 use bytes::Bytes;
 
 use crate::Decoder;
@@ -17,14 +16,12 @@ impl WldFragment for WldFragment44 {
 }
 
 impl Decoder<Settings> for WldFragment44 {
-    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
+    fn new(_input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {
         let name = settings.get_name();
 
-        Ok(Self {
-            name,
-        })
+        Ok(Self { name })
     }
 }

@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use bytes::Buf;
 use bytes::Bytes;
 
 use crate::Decoder;
@@ -17,7 +16,7 @@ impl WldFragment for WldParticleCloud {
 }
 
 impl Decoder<Settings> for WldParticleCloud {
-    fn new(input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
+    fn new(_input: &mut Bytes, settings: Arc<Settings>) -> Result<Self, crate::EQFilesError>
     where
         Self: Sized,
     {

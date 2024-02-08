@@ -5,7 +5,6 @@ use std::sync::Arc;
 use bitbybit::bitfield;
 use bytes::Buf;
 use bytes::Bytes;
-use tracing::info;
 
 use crate::Decoder;
 use crate::Settings;

@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
-use bytes::{Buf, Bytes};
+use bytes::Buf;
+use bytes::Bytes;
 
 use crate::EQFilesError;
 
@@ -24,7 +25,7 @@ impl Model {
         let material_count = bytes.get_u32_le();
         let vertex_count = bytes.get_u32_le();
         let triangle_count = bytes.get_u32_le();
-        let bone_count = bytes.get_u32_le();
+        let _bone_count = bytes.get_u32_le();
 
         let strings = ModelStringTable::parse(bytes, strings_length as usize)?;
         let mut materials = Vec::new();
