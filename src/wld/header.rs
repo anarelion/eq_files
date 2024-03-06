@@ -53,7 +53,7 @@ impl Decoder<EmptySettings> for WldHeader {
             string_count,
         };
 
-        info!("{:?}", result);
+        // info!("{:?}", result);
 
         Ok(result)
     }

@@ -31,7 +31,7 @@ impl Decoder<Settings> for WldMaterial {
         let name = settings.get_name();
 
         let flags = input.get_u32_le();
-        let render_method = input.get_u32_le();
+        let render_method = input.get_u32_le() & 0x7FFFFFFF;
         let rgb_pen = input.get_u32_le();
         let brightness = input.get_f32_le();
         let scaled_ambient = input.get_f32_le();

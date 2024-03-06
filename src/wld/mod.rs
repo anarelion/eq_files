@@ -48,7 +48,7 @@ impl Decoder<EmptySettings> for WldFile {
         .map(|(i, v)| ((i + 1) as u32, Arc::new(v.clone())))
         .collect();
 
-        info!("fragments by index: {}", fragments_by_index.len());
+        // info!("fragments by index: {}", fragments_by_index.len());
 
         let fragments_by_name = fragments_by_index
             .iter()
